@@ -1,28 +1,31 @@
 import express from 'express'
 import cors from 'cors'
-import path from 'path'
-import { fileURLToPath } from 'url'
 import 'dotenv/config'
 import connectDB from './config/db.js'
 import userDataRoutes from './routes/userDataRoutes.js'
 
-const __dirname = path.dirname(fileURLToPath(import.meta.url))
-
-const app  = express()
+const app = express()
 app.use(cors())
 app.use(express.json())
-app.use(express.urlencoded({extended:true}))
-app.use('/uploads', express.static(path.join(__dirname, 'uploads')))
+app.use(express.urlencoded({ extended: true }))
 
-const port = process.env.PORT || 5000
+// Ensure the DB connection is ready before any route runs - required on
+// serverless platforms (Vercel) where there's no persistent startup phase
+// to connect once up front. connectDB() caches the connection, so this is
+// a no-op after the first successful call in a given instance.
+app.use(async (req, res, next) => {
+    try {
+        await connectDB()
+        next()
+    } catch (error) {
+        res.status(500).json({ message: 'Database connection failed' })
+    }
+})
 
-app.get('/',(req,res)=>{
+app.get('/', (req, res) => {
     res.send('backend is running')
-
 })
 
 app.use(userDataRoutes)
 
-connectDB().then(() => {
-    app.listen(port,()=>console.log(`backend is running on Port ${port}`))
-})
+export default app

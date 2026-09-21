@@ -6,9 +6,9 @@
   "type": "module",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "node app.js",
-    "dev": "nodemon app.js",
-    "dev:proxy-app": "cross-env USE_PROXY=true nodemon app.js",
+    "start": "node server.js",
+    "dev": "nodemon server.js",
+    "dev:proxy-app": "cross-env USE_PROXY=true nodemon server.js",
     "proxy-bridge": "node scripts/proxy-bridge.js",
     "dev:proxy": "concurrently -n bridge,app -c yellow,cyan \"npm:proxy-bridge\" \"npm:dev:proxy-app\""
   },
@@ -17,6 +17,7 @@
   "license": "ISC",
   "dependencies": {
     "bcryptjs": "^3.0.3",
+    "cloudinary": "^2.11.0",
     "cors": "^2.8.6",
     "dotenv": "^17.4.2",
     "express": "^5.2.1",
