@@ -10,7 +10,7 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url))
 
 const app = express()
 app.use(cors({
-    origin: ['http://localhost:3000'],
+    origin: ['http://localhost:3000','https://repo-react-atjhgiw54-lj-661c.vercel.app'],
 }))
 app.use(express.json())
 app.use(express.urlencoded({ extended: true }))
