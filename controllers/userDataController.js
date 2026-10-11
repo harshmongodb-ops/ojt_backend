@@ -1,6 +1,20 @@
 import bcrypt from 'bcryptjs'
 import UserData from '../models/UserData.js'
 import generateToken from '../utils/jwtUtils.js'
+import cloudinary from '../config/cloudinary.js'
+
+
+const uploadToCloudinary = (buffer) => {
+    return new Promise((resolve, reject) => {
+        const stream = cloudinary.uploader.upload_stream(
+            { folder: 'ojt_users' },
+            (error, result) => {
+                if (error) return reject(error)
+                resolve(result)
+            })
+        stream.end(buffer)
+    })
+}
 
 export const loginUserData = async (req, res) => {
     try {
@@ -24,7 +38,14 @@ export const loginUserData = async (req, res) => {
 export const createUserData = async (req, res) => {
     try {
         const payload = { ...req.body }
-        if (req.file) payload.image = `/uploads/${req.file.filename}`
+       let imageUrl = ""
+        if(req.file) {
+            const result = await uploadToCloudinary(req.file.buffer)
+            imageUrl = result.secure_url
+        }
+
+        payload.image = imageUrl
+
         const userData = await UserData.create(payload)
         res.status(201).json({ status: 1, message: 'success', data: userData })
     } catch (error) {
